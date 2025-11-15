@@ -25,8 +25,8 @@ docker-compose up -d postgres redis
 
 1. **Clonar el repositorio** (si aún no lo tienes)
    ```bash
-   git clone <repository-url>
-   cd test
+   git clone https://github.com/cucchi10/CouponManager.git
+   cd CouponManager
    ```
 
 2. **Instalar dependencias**
