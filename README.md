@@ -8,11 +8,11 @@ A production-ready **NestJS** boilerplate with enterprise-grade architecture, Ty
 
 ## 🚀 Quick Start
 
-**¿Querés empezar a testear rápidamente?** 
+**Want to start testing quickly?**
 
-👉 **[Ver Guía de Inicio Rápido](docs/QUICK_START.md)** - Configuración, variables de entorno, autenticación y ejemplos para Postman.
+👉 **[View Quick Start Guide](docs/QUICK_START.md)** – Setup, environment variables, authentication, and Postman examples.
 
-📮 **[Colección de Postman Completa](postman/README.md)** - Flujo completo automatizado: Login → Create Book → Generate Codes → Assign → Lock → Redeem
+📮 **[Complete Postman Collection](postman/README.md)** – Full automated flow: Login → Create Book → Generate Codes → Assign → Lock → Redeem
 
 ## 📖 Overview
 
