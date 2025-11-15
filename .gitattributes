@@ -1,2 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Convert text file line endings to lf
+* text eol=lf
+*.js text
+*.png binary
+*.jpg binary
+*.tgz binary

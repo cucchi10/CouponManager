@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "coupon-flow-collection",
+		"name": "Coupon Flow - Complete Workflow",
+		"description": "Complete workflow: Login → Create Book → Generate Codes → Assign Coupon → Get Status → Lock → Redeem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    if (response.data && response.data.accessToken) {",
+							"        pm.collectionVariables.set('jwt_token', response.data.accessToken);",
+							"        console.log('✅ JWT token saved to collection variables');",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"demo\",\n  \"password\": \"demo123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auth/login",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auth", "login"]
+				},
+				"description": "Login to get JWT token. Default credentials: demo/demo123"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create Coupon Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const response = pm.response.json();",
+							"    if (response.data && response.data.id) {",
+							"        pm.collectionVariables.set('book_id', response.data.id);",
+							"        console.log('✅ Book ID saved to collection variables:', response.data.id);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Test Book - {{$timestamp}}\",\n  \"description\": \"Test coupon book for workflow\",\n  \"validFrom\": \"2025-01-01T00:00:00Z\",\n  \"validUntil\": \"2025-12-31T23:59:59Z\",\n  \"codePattern\": \"TEST{XXXX}\",\n  \"maxCodes\": 1000,\n  \"maxRedemptionsPerUser\": 1,\n  \"maxAssignmentsPerUser\": 1\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/coupon-books",
+					"host": ["{{base_url}}"],
+					"path": ["api", "coupon-books"]
+				},
+				"description": "Create a new coupon book with pattern TEST{XXXX}"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Generate Codes",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"count\": 100\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/coupon-books/{{book_id}}/codes/generate",
+					"host": ["{{base_url}}"],
+					"path": ["api", "coupon-books", "{{book_id}}", "codes", "generate"]
+				},
+				"description": "Generate 100 coupon codes for the book"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Assign Random Coupon",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    const response = pm.response.json();",
+							"    if (response.data && response.data.couponCode) {",
+							"        pm.collectionVariables.set('coupon_code', response.data.couponCode);",
+							"        console.log('✅ Coupon code saved to collection variables:', response.data.couponCode);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"couponBookId\": \"{{book_id}}\",\n  \"userId\": \"demo\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/coupons/assign/random",
+					"host": ["{{base_url}}"],
+					"path": ["api", "coupons", "assign", "random"]
+				},
+				"description": "Assign a random coupon from the book to user 'demo'"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Get Coupon Status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/coupons/{{coupon_code}}/status",
+					"host": ["{{base_url}}"],
+					"path": ["api", "coupons", "{{coupon_code}}", "status"]
+				},
+				"description": "Get the status and details of the assigned coupon"
+			},
+			"response": []
+		},
+		{
+			"name": "6. Lock Coupon",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"lockDurationSeconds\": 300\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/coupons/{{coupon_code}}/lock",
+					"host": ["{{base_url}}"],
+					"path": ["api", "coupons", "{{coupon_code}}", "lock"]
+				},
+				"description": "Lock the coupon for 5 minutes (300 seconds)"
+			},
+			"response": []
+		},
+		{
+			"name": "7. Redeem Coupon",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"metadata\": {\n    \"orderId\": \"order-123\",\n    \"purchaseAmount\": 100.50,\n    \"discount\": 20.10\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/coupons/{{coupon_code}}/redeem",
+					"host": ["{{base_url}}"],
+					"path": ["api", "coupons", "{{coupon_code}}", "redeem"]
+				},
+				"description": "Redeem the locked coupon permanently"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "test-api-key-12345-change-in-production",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "book_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "coupon_code",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

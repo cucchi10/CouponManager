@@ -1,0 +1,7 @@
+export enum CacheBucket {
+	DEDUP = 'DEDUP',
+	JWT_BLACKLIST = 'JWT_BLACKLIST',
+	JWT_ACTIVE = 'JWT_ACTIVE',
+	CURSOR = 'CURSOR',
+	LOCKS = 'LOCKS'
+}
