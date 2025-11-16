@@ -27,7 +27,7 @@ This project provides a solid foundation for building scalable server-side appli
 ## 🎟️ **Featured: Coupon Book System**
 
 Complete coupon management implementation with:
-- **13 RESTful endpoints** for coupon lifecycle
+- **14 RESTful endpoints** for coupon lifecycle
 - **Multi-layer locking** (Redis + Database + Optimistic)
 - **Flexible redemption rules** (single or multi-use)
 - **Pattern-based generation** (`SUMMER{XXXX}`)
