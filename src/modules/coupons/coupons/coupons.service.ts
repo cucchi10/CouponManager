@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { CouponBook } from '../books/entities';
@@ -499,14 +499,7 @@ export class CouponsService {
 			});
 		}
 
-		const { id: couponId, user_id: couponUserId, status } = result[0];
-
-		if (couponUserId !== userId) {
-			throw new ForbiddenException({
-				message: 'Coupon is not assigned to this user',
-				code: ErrorCode.FORBIDDEN_ERROR
-			});
-		}
+		const { id: couponId, status } = result[0];
 
 		if (status !== CouponStatus.LOCKED) {
 			throw new BusinessException({
