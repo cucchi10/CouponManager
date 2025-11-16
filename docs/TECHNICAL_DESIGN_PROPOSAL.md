@@ -188,25 +188,27 @@ stateDiagram-v2
     
     Available --> Assigned: Asignar a usuario
     
-    Assigned --> Redeemed: Redimir
+    Assigned --> Assigned: Redimir<br/>(si quedan redenciones disponibles)
+    Assigned --> Redeemed: Redimir<br/>(alcanzó max redemptions)
     
-    Redeemed --> Redeemed: Redimir de nuevo<br/>(si permite múltiples usos)
+    Redeemed --> [*]: Sin usos restantes
     
     Available --> Expired: Vencido
     Assigned --> Expired: Vencido
     Redeemed --> Expired: Vencido
     
-    Redeemed --> [*]: Sin usos restantes
     Expired --> [*]
 ```
 
 **Estados:**
 - **Available**: Disponible para asignar
-- **Assigned**: Asignado a un usuario, listo para usar
-- **Redeemed**: Ya usado (puede volver a usarse si `maxRedemptions > 1`)
+- **Assigned**: Asignado a un usuario, listo para usar o ya usado pero con redenciones disponibles
+- **Redeemed**: Completamente usado - alcanzó el máximo de redenciones permitidas (`maxRedemptions`)
 - **Expired**: Venció por fecha
 
 **Nota:** El estado `locked` (durante checkout) es temporal y se maneja con timestamps en la tabla, no como estado persistido.
+
+**Importante:** El estado `Redeemed` solo se establece cuando se alcanza el máximo de redenciones (`maxRedemptions`). Si un cupón permite múltiples redenciones y aún quedan disponibles, permanece en estado `Assigned` después de cada redención para permitir más canjeos.
 
 ### ¿Por Qué Tabla Separada para Assignments?
 
